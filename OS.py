@@ -1,16 +1,3 @@
-allocation = [[0,1,1],[2,0,0],[3,0,2],[2,1,1]] # consist of 2d list 
-# Each inner list consist of a process 
-
-maximum_allowance = [[7,5,3],[3,2,2],[9,0,2],[4,3,3]] # a 2d matrix 
-# Each inner list consist of a process 
-
-result = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
-
-# Define a function to calcualte the value from allcoation matrix
-    # Assuming values of each process and subtracting it with our available.
-    # return available as as list
-work = [sum(i) for i in zip(*allocation)]  
-
 # find need matrix form allocation from maximum_allowance (max-allocation)
 # Define a function called need matrix this returns all in matrix format
     # Check if need <= previousFunction()
@@ -58,7 +45,23 @@ def needMatrix(allocation,maximum_allowance):
         if find == False:
             return f"Is system in safe state: {False}"
     
-    print("System is in safe state.", "\nSafe sequence is: ", end = " ") 
+    print("Eureka!!!! We found the safe sequence for out given process and their sequece is: \n", end = " ")
     print(*safe_sequence) 
-
     return True
+
+if __name__ == "__main__":
+    allocation = [[0,1,1],[2,0,0],[3,0,2],[2,1,1]] # consist of 2d list 
+    # Each inner list consist of a process 
+
+    maximum_allowance = [[7,5,3],[3,2,2],[9,0,2],[4,3,3]] # a 2d matrix 
+    # Each inner list consist of a process 
+
+    result = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+    
+    # Define a function to calcualte the value from allcoation matrix
+    # Assuming values of each process and subtracting it with our available.
+    # return available as as list
+    work = [sum(i) for i in zip(*allocation)]  
+
+    # Calling our methods
+    print(needMatrix(allocation,maximum_allowance))
