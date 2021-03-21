@@ -1,11 +1,8 @@
-# find need matrix form allocation from maximum_allowance (max-allocation)
-# Define a function called need matrix this returns all in matrix format
-    # Check if need <= previousFunction()
-    # update available += allocation
-def needMatrix(allocation,maximum_allowance): 
+def bankersAlgorithm(allocation,maximum_allowance): 
     need = []
     for i in range(len(allocation)):
         for j in range(len(allocation[0])):
+            # find need matrix form allocation from maximum_allowance (max-allocation)
             result[i][j] = maximum_allowance[i][j] - allocation[i][j] # This calculates the need of our process
     for i in result:
         need.append(i)
@@ -27,13 +24,15 @@ def needMatrix(allocation,maximum_allowance):
         for i in range(len(allocation)):
 
             for j in range(len(work)):
-
+                # Check if need >= work
+                # If its' greater than work then return the pointer variable as 1 and break the loop
                 if need[i][j] > work[j]:
                     pointer = 1
                     break
             
             if (j == len(work)-1):
-
+                # Check if need <= work
+                # update available += allocation
                 for k in range(len(work)):
                     work[k] += allocation[i][k]
                 
@@ -64,4 +63,4 @@ if __name__ == "__main__":
     work = [sum(i) for i in zip(*allocation)]  
 
     # Calling our methods
-    print(needMatrix(allocation,maximum_allowance))
+    print(bankersAlgorithm(allocation,maximum_allowance))
