@@ -30,11 +30,11 @@ def bankersAlgorithm(allocation,maximum_allowance):
                     pointer = 1
                     break
             
-            if (j == len(work)-1):
+                else:
                 # Check if need <= work
                 # update available += allocation
-                for k in range(len(work)):
-                    work[k] += allocation[i][k]
+                    for k in range(len(work)):
+                        work[k] += allocation[i][k]
                 
                 safe_sequence[0] = i
                 pointer += 1
@@ -49,18 +49,19 @@ def bankersAlgorithm(allocation,maximum_allowance):
     return True
 
 if __name__ == "__main__":
-    allocation = [[0,1,1],[2,0,0],[3,0,2],[2,1,1]] # consist of 2d list 
+    allocation = [[0,1,0],[2,0,0],[3,0,2],[2,1,1],[0,0,2]] # consist of 2d list 
     # Each inner list consist of a process 
 
-    maximum_allowance = [[7,5,3],[3,2,2],[9,0,2],[4,3,3]] # a 2d matrix 
+    maximum_allowance = [[7,5,3],[3,2,2],[9,0,2],[2,2,2],[4,3,3]] # a 2d matrix 
     # Each inner list consist of a process 
 
-    result = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+    result = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
     
     # Define a function to calcualte the value from allcoation matrix
     # Assuming values of each process and subtracting it with our available.
     # return available as as list
     work = [sum(i) for i in zip(*allocation)]  
 
+    print(result)
     # Calling our methods
     print(bankersAlgorithm(allocation,maximum_allowance))
