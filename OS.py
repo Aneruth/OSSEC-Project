@@ -36,7 +36,7 @@ def bankersAlgorithm(allocation,maximum_allowance):
                     for k in range(len(work)):
                         work[k] += allocation[i][k]
                 
-                safe_sequence[0] = i
+                safe_sequence[i] = i
                 pointer += 1
                 done[i] = 1
                 find = True
@@ -60,8 +60,9 @@ if __name__ == "__main__":
     # Define a function to calcualte the value from allcoation matrix
     # Assuming values of each process and subtracting it with our available.
     # return available as as list
-    work = [sum(i) for i in zip(*allocation)]  
-
-    print(result)
+    rowSum_allocation = [sum(i) for i in zip(*allocation)]  
+    total = [10,5,7]
+    work = [i-j for i,j in zip(total,rowSum_allocation)]
+    # print(result)
     # Calling our methods
     print(bankersAlgorithm(allocation,maximum_allowance))
