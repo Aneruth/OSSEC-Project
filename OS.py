@@ -32,24 +32,24 @@ def isSafe(P,R):
         print('The system is Unsafe')
     else:
         print("Eureka!!!! We found the safe sequence for out given process and their sequece is: \n", end = " ")
-        print("Safe Sequence: ",*Sequence)
+        print("Safe Sequence: ",Sequence)
         print("Available Resource:",work)
     return True
 
 if __name__ == "__main__":
-    allocation = [[4,0,0,1],[1,1,0,0],[1,2,5,4],[0,6,3,3],[0,2,1,2]] # consist of 2d list 
+    allocation = [[0, 1, 0 ],[ 2, 0, 0 ],[3, 0, 2 ],[2, 1, 1] ,[ 0, 0, 2]] # consist of 2d list 
     # Each inner list consist of a process 
 
-    maximum_allowance = [[6,0,1,2],[1,7,5,0],[2,3,5,6],[1,6,5,3],[1,6,5,6]] # a 2d matrix 
+    maximum_allowance = [[7, 5, 3 ],[3, 2, 2 ],[ 9, 0, 2 ],[2, 2, 2],[4, 3, 3]] # a 2d matrix 
     # Each inner list consist of a process 
 
-    result = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    result = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
     
     # Define a function to calcualte the value from allcoation matrix
     # Assuming values of each process and subtracting it with our available.
     # return available as as list
     rowSum_allocation = [sum(i) for i in zip(*allocation)]  
-    total = [10,5,7,3]
+    total = [10,5,7]
     work = [i-j for i,j in zip(total,rowSum_allocation)]
     P = len(allocation) # Defines number of process
     R = len(allocation[0]) # Defones number if resources
