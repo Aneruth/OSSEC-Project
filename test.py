@@ -27,7 +27,7 @@ SourcePathName  = '/Users/aneruthmohanasundaram/Documents/GitHub/OSSEC-Project/'
 
 msg = MIMEMultipart()
 msg['From'] = 'aneruth.mohanasundaram@vub.be'
-msg['To'] = 'alina.jose@vub.be'
+msg['To'] = 'aneruth.mohanasundaram@vub.be'
 msg['Subject'] = 'Log File creation'
 body = 'Basic log file generation'
 msg.attach(MIMEText(body, 'plain'))
