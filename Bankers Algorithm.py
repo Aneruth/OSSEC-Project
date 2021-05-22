@@ -1,3 +1,32 @@
+
+import logging,numpy as np
+import azure.functions as func
+from azure.storage.table import TableService 
+
+allocation = [] 
+maxallocations = []
+
+table_service = TableService(account_name='storagebankersalgorithm', account_key='D36RqEMiAugfFpAegohTsURNMScBAM1LGqsiAdbPvhCBHEtlduAwmZorE7tTLg0wRme6OvpfnrrnOKovc6+SOg==')
+
+rows=table_service.query_entities('allocationtable',"PartitionKey eq 'process'")
+
+logging.info(f"Found process : {len(rows)}")
+
+for row in rows:
+    print(row.RowKey,row.allocations,row.maxallocations)
+
+    allocation.append(list(map(int,row.allocations.split(','))))
+    maxallocations.append(list(map(int,row.maxallocations.split(','))))
+
+logging.info(f"Allocation row: {len(allocation)} \n  MaxAllocation rows : {len(maxallocations)}")
+
+rownew = {'PartitionKey': 'process', 'RowKey': '6', 'allocations' : '2,6,1', 'maxallocations' : '5,8,3'}
+
+# Insert the entity into the table
+print('Inserting a new entity into table - ')
+table_service.insert_entity('allocationtable', rownew)
+print('Successfully inserted the new entity')
+
 def needMatrix(allocation,maximum_allowance): 
     need = []
     for i in range(len(allocation)):
