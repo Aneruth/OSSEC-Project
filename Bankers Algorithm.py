@@ -1,38 +1,45 @@
 
 import logging,numpy as np
+
 import azure.functions as func
-from azure.storage.table import TableService 
+from azure.storage.table import TableService
 
 allocation = [] 
 maxallocations = []
 
-table_service = TableService(account_name='storagebankersalgorithm', account_key='D36RqEMiAugfFpAegohTsURNMScBAM1LGqsiAdbPvhCBHEtlduAwmZorE7tTLg0wRme6OvpfnrrnOKovc6+SOg==')
+logging.info('Python HTTP trigger function processed a request.')
+# Creating the table serive where we access our Azure Storage Services
+table_service = TableService(account_name='storagebankersalgorithm', account_key='code')
 
+# Adding entities to our table
+# enity = {'PartitionKey': 'process', 'RowKey': '11', 'allocations' : '16,27,33', 'maxallocations' : '26,32,34'}
+# print('Inserting a new entity into table - ' + 'allocationtable')
+# table_service.insert_entity('allocationtable', enity)
+# print('Successfully inserted the new entity')
+
+# Fetching all the rows present inside our Azure Database Storage
 rows=table_service.query_entities('allocationtable',"PartitionKey eq 'process'")
-
-logging.info(f"Found process : {len(rows)}")
-
+logging.info(f"Found process : {len(rows.items)}")
 for row in rows:
     print(row.RowKey,row.allocations,row.maxallocations)
-
     allocation.append(list(map(int,row.allocations.split(','))))
     maxallocations.append(list(map(int,row.maxallocations.split(','))))
-
 logging.info(f"Allocation row: {len(allocation)} \n  MaxAllocation rows : {len(maxallocations)}")
 
-rownew = {'PartitionKey': 'process', 'RowKey': '6', 'allocations' : '2,6,1', 'maxallocations' : '5,8,3'}
 
-# Insert the entity into the table
-print('Inserting a new entity into table - ')
-table_service.insert_entity('allocationtable', rownew)
-print('Successfully inserted the new entity')
+rowSum_allocation = [sum(i) for i in zip(*allocation)]  # Calculaing the row sum of each columns present
+total = [10,5,7]
+work = [i-j for i,j in zip(total,rowSum_allocation)] # Initaialsing the work list which will be compared and updated
+P = len(allocation) # Defines number of process
+R = len(allocation[0]) # Defones number if resources
 
-def needMatrix(allocation,maximum_allowance): 
+def needMatrix(allocation,maxallocations): 
+    result = [[0 for i in range(R)] for j in range(P)]
     need = []
     for i in range(len(allocation)):
         for j in range(len(allocation[0])):
             # find need matrix form allocation from maximum_allowance (max-allocation)
-            result[i][j] = maximum_allowance[i][j] - allocation[i][j] # This calculates the need of our process
+            result[i][j] = maxallocations[i][j] - allocation[i][j] # This calculates the need of our process
     for i in result:
         need.append(i)
     
@@ -41,49 +48,49 @@ def needMatrix(allocation,maximum_allowance):
 def isSafe(P,R):
     # Considering all process are incomplete.
     # The allocation provides us the number of process present. This can be done by considering the list of our allocation matrix.
-    done = [0] * P
-    Sequence = [0] * P
-    count = 0
-    while( count < P ):
-        temp=0
-        for i in range( P ):
-            if( needMatrix(allocation,maximum_allowance)[i] == 0 ):
-                if(needMatrix(allocation,maximum_allowance)(i)):
-                    Sequence[count]=i;
-                    count+=1
-                    done[i]=1
-                    temp=1
+    running = [True] * P
+    count = P
+    while count != 0:
+        safe = False
+        for i in range(P):
+            if running[i]:
+                executing = True
+                for j in range(R):
+                    if maxallocations[i][j] - allocation[i][j] > work[j]:
+                        executing = False
+                        break
+                if executing:
+                    print(f"process {i + 1} running")
+                    running[i] = False
+                    count -= 1
+                    safe = True
                     for j in range(R):
-                        work[j] += allocation[i][j] 
-        if(temp == 0):
+                        work[j] += allocation[i][j]
+                    break
+        if not safe:
+            print("The process is in an insecure state.")
             break
-    if(count < P):
-        print('The system is Unsafe')
-    else:
-        print("Eureka!!!! We found the safe sequence for out given process and their sequece is: \n", end = " ")
-        print("Safe Sequence: ",Sequence)
-        print("Available Resource:",work)
+ 
+        print(f"The process is in a safe state. \n Available resources: {work}\n")
     return True
 
-if __name__ == "__main__":
-    allocation = [[0, 1, 0 ],[ 2, 0, 0 ],[3, 0, 2 ],[2, 1, 1] ,[ 0, 0, 2]] # consist of 2d list 
-    # Each inner list consist of a process 
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        
+        # Calling our methods
 
-    maximum_allowance = [[7, 5, 3 ],[3, 2, 2 ],[ 9, 0, 2 ],[2, 2, 2],[4, 3, 3]] # a 2d matrix 
-    # Each inner list consist of a process 
+        logging.info('The need matrix is: ')
+        needmatrixresponse = needMatrix(allocation,maxallocations)
+        logging.info(np.array(needmatrixresponse))
+        response = isSafe(P,R)
+        logging.info(response)
 
-    result = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
-    
-    # Define a function to calcualte the value from allcoation matrix
-    # Assuming values of each process and subtracting it with our available.
-    # return available as as list
-    rowSum_allocation = [sum(i) for i in zip(*allocation)]  
-    total = [10,5,7]
-    work = [i-j for i,j in zip(total,rowSum_allocation)]
-    P = len(allocation) # Defines number of process
-    R = len(allocation[0]) # Defones number if resources
-
-    # Calling our methods
-    print('The need matrix is: ')
-    print(needMatrix(allocation,maximum_allowance))
-    print(isSafe(P,R))
+        if response:
+            return func.HttpResponse(f"NeedMatrix : {needmatrixresponse} \n\n System : {response}")
+        else:
+            return func.HttpResponse(
+                "Response status not available",
+                status_code=204
+            )
+    except Exception as e:
+        logging.info(e)
